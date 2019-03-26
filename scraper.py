@@ -16,6 +16,9 @@ from pdfminer.pdfdevice import PDFDevice
 from pdfminer.pdfpage import PDFTextExtractionNotAllowed
 from pdfminer.layout import LAParams, LTTextBox, LTTextLine
 from pdfminer.converter import PDFPageAggregator
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+import string
 
 
 URL = 'http://proceedings.mlr.press/v80/'
@@ -58,7 +61,9 @@ def read_pdfs():
     pdf_files = [f for f in listdir(DOWNLOAD_PATH) if isfile(join(DOWNLOAD_PATH, f))]
     word_freq = {}
 
+    stopWords = set(stopwords.words('english'))
     for pdf_file in pdf_files:
+
         path = DOWNLOAD_PATH + pdf_file
         fp = open(path,'rb')
         parser = PDFParser(fp)
@@ -93,8 +98,23 @@ def read_pdfs():
             for lt_obj in layout:
                 if isinstance(lt_obj, LTTextBox) or isinstance(lt_obj, LTTextLine):
                     text = lt_obj.get_text()
+                    # make all text lowercase
+                    text = text.lower()
+                    # remove line breaks
+                    text = text.replace('-\n','')
+                    # remove all punctuation from the text
+                    text = text.translate(str.maketrans('', '', string.punctuation))
+                    # remove new line
                     text = text.replace('\n',' ')
                     extracted_text += text
+        words = word_tokenize(extracted_text)
+        for word in words:
+            # don't include stop words
+            if word not in stopWords:
+                # take all word to lowercase
+                word = word.lower()
+                count = word_freq.get(word,0)
+                word_freq[word] = count+1
 
     return word_freq
 
