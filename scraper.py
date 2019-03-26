@@ -1,5 +1,5 @@
 #python utility to scrape all pdfs from http://proceedings.mlr.press/v80/
-
+import heapq
 import re
 from urllib.request import urlopen
 from urllib.parse import urlparse
@@ -115,15 +115,27 @@ def read_pdfs():
                 word = word.lower()
                 count = word_freq.get(word,0)
                 word_freq[word] = count+1
+        fp.close()
 
     return word_freq
 
+def write_freqs(word_freq):
+    with open("word_freqs.txt", 'w') as f:
+        for word, count in word_freq.items():
+            f.write('{}:{}'.format(word,count))
+
+def get_top_ten(word_freq):
+    heap = [(-value, key) for key, value in word_freq.items()]
+    largest = heapq.nsmallest(10, heap)
+    largest = [(key, -value) for value, key in largest]
 
 def main():
     #links = get_all_links()
     #pdf_links = get_pdf_links(links)
     #download_pdfs(pdf_links)
     word_freq = read_pdfs()
+    write_freqs(word_freq)
+    get_top_ten(word_freq)
 
 if __name__=='__main__':
     main()
