@@ -62,6 +62,8 @@ def read_pdfs():
     word_freq = {}
 
     stopWords = set(stopwords.words('english'))
+    stopWords.add('et')
+    stopWords.add('al')
     for pdf_file in pdf_files:
 
         path = DOWNLOAD_PATH + pdf_file
@@ -106,11 +108,12 @@ def read_pdfs():
                     text = text.translate(str.maketrans('', '', string.punctuation))
                     # remove new line
                     text = text.replace('\n',' ')
+                    text = text.replace('−',' ')
                     extracted_text += text
         words = word_tokenize(extracted_text)
         for word in words:
-            # don't include stop words
-            if word not in stopWords:
+            # don't include stop words or numeric words or single chars representing mathematical variables
+            if (word not in stopWords) and (word.isnumeric()==False) and (len(word) > 1):
                 # take all word to lowercase
                 word = word.lower()
                 count = word_freq.get(word,0)
@@ -122,12 +125,13 @@ def read_pdfs():
 def write_freqs(word_freq):
     with open("word_freqs.txt", 'w') as f:
         for word, count in word_freq.items():
-            f.write('{}:{}'.format(word,count))
+            f.write('{} {}\n'.format(word,count))
 
 def get_top_ten(word_freq):
     heap = [(-value, key) for key, value in word_freq.items()]
     largest = heapq.nsmallest(10, heap)
     largest = [(key, -value) for value, key in largest]
+    return largest
 
 def main():
     #links = get_all_links()
@@ -135,7 +139,9 @@ def main():
     #download_pdfs(pdf_links)
     word_freq = read_pdfs()
     write_freqs(word_freq)
-    get_top_ten(word_freq)
+    largest = get_top_ten(word_freq)
+    print(largest)
+
 
 if __name__=='__main__':
     main()
