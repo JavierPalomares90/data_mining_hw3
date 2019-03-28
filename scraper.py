@@ -1,4 +1,5 @@
-#python utility to scrape all pdfs from http://proceedings.mlr.press/v80/
+# python utility to scrape all pdfs from http://proceedings.mlr.press/v80/
+# Author: Javier Palomares
 import heapq
 import re
 from urllib.request import urlopen
@@ -134,9 +135,9 @@ def get_top_ten(word_freq):
     return largest
 
 def main():
-    #links = get_all_links()
-    #pdf_links = get_pdf_links(links)
-    #download_pdfs(pdf_links)
+    links = get_all_links()
+    pdf_links = get_pdf_links(links)
+    download_pdfs(pdf_links)
     word_freq = read_pdfs()
     write_freqs(word_freq)
     largest = get_top_ten(word_freq)
