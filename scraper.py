@@ -101,6 +101,9 @@ def read_pdfs():
             for lt_obj in layout:
                 if isinstance(lt_obj, LTTextBox) or isinstance(lt_obj, LTTextLine):
                     text = lt_obj.get_text()
+                    # remove any characters that pdfminer was not able to
+                    # convert to unicode and converts to (cid:%%)
+                    text = re.sub('(cid:[0-9]+)','',text)
                     # make all text lowercase
                     text = text.lower()
                     # remove line breaks
@@ -110,6 +113,7 @@ def read_pdfs():
                     # remove new line
                     text = text.replace('\n',' ')
                     text = text.replace('−',' ')
+
                     extracted_text += text
         words = word_tokenize(extracted_text)
         for word in words:
