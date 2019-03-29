@@ -2,13 +2,15 @@
 # Must be executed after scraper.py writes word_freqs.txt
 
 WORD_FREQ_FILE= 'word_freqs.txt'
-PARAGRAPH_LEN = 20
+PARAGRAPH_NUM_WORDS = 30
 K = 1.0
 import math
 import numpy as np
+from alphabet_detector import AlphabetDetector
 
 
-def get_word_prob():
+def get_word_prob(all_words=False):
+    ad = AlphabetDetector()
     word_probs = {}
     total_word_count = 0
     with open(WORD_FREQ_FILE,'r') as f:
@@ -16,9 +18,11 @@ def get_word_prob():
         while line:
             tokens = line.split()
             word = tokens[0]
-            count = int(tokens[1])
-            word_probs[word] = count
-            total_word_count += count
+            # Only consider latin words by default
+            if all_words or ad.only_alphabet_chars(word,"LATIN"):
+                count = int(tokens[1])
+                word_probs[word] = count
+                total_word_count += count
             line = f.readline()
     # convert the count to a prob by dividing by the total count
     for word,count in word_probs.items():
@@ -50,11 +54,11 @@ def first_order_synthesized_paragraph(word_probs,par_len):
 
 
 def main():
-    word_probs = get_word_prob()
-    verify_word_probs(word_probs)
-    H = compute_entropy(word_probs)
+    all_word_probs = get_word_prob(True)
+    verify_word_probs(all_word_probs)
+    H = compute_entropy(all_word_probs)
     print("The computed entropy for the pdf text is {}".format(H))
-    print(first_order_synthesized_paragraph(word_probs,20))
+    print(first_order_synthesized_paragraph(get_word_prob(False),PARAGRAPH_NUM_WORDS))
 
 if __name__=='__main__':
     main()
