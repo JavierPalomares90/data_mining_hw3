@@ -66,6 +66,7 @@ def read_pdfs():
     stopWords.add('et')
     stopWords.add('al')
     for pdf_file in pdf_files:
+        print("reading {}".format(pdf_file))
 
         path = DOWNLOAD_PATH + pdf_file
         fp = open(path,'rb')
