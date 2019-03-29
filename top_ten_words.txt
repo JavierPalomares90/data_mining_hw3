@@ -1,2 +1,2 @@
-[('learning', 22554), ('algorithm', 14883), ('model', 13805), ('data', 11710), ('function', 11523), ('using', 11326), ('set', 11081), ('training', 8865), ('neural', 8667), ('gradient', 8641)]
+[('learning', 22543), ('algorithm', 14883), ('model', 13804), ('data', 11707), ('function', 11523), ('using', 11327), ('set', 11084), ('training', 8864), ('neural', 8666), ('gradient', 8647)]
 
