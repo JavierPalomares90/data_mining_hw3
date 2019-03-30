@@ -24,6 +24,7 @@ import string
 
 URL = 'http://proceedings.mlr.press/v80/'
 DOWNLOAD_PATH = "./pdfs/"
+FREQUENCY_PATH = "/freqs/"
 
 
 def get_all_links():
@@ -66,6 +67,11 @@ def read_pdfs():
     stopWords.add('et')
     stopWords.add('al')
     for pdf_file in pdf_files:
+        # word frequency in this one file. we'll write the
+        # word frequency of per every single file in addition to
+        # the word frequency across all files
+        word_prob_this_file= {}
+        file_len = 0
         print("reading {}".format(pdf_file))
 
         path = DOWNLOAD_PATH + pdf_file
@@ -117,19 +123,32 @@ def read_pdfs():
 
                     extracted_text += text
         words = word_tokenize(extracted_text)
+
         for word in words:
             # don't include stop words or numeric words or single chars representing mathematical variables
             if (word not in stopWords) and (word.isnumeric()==False) and (len(word) > 1):
                 # take all word to lowercase
                 word = word.lower()
+                # frequency across all files
                 count = word_freq.get(word,0)
                 word_freq[word] = count+1
+                # frequency across this file
+                count = word_prob_this_file.get(word,0)
+                word_prob_this_file[word] = count+1
+                file_len += 1
         fp.close()
+        # write the word distribution of this file [0-1] values
+        filename = FREQUENCY_PATH + pdf_file + ".txt"
+        for word,count in word_prob_this_file.items():
+            prob = 1.0 * count / (1.0 * file_len)
+            word_prob_this_file[word] = prob
+        write_freqs(word_prob_this_file,filename)
 
     return word_freq
 
-def write_freqs(word_freq):
-    with open("word_freqs.txt", 'w') as f:
+
+def write_freqs(word_freq,filename):
+    with open(filename, 'w') as f:
         for word, count in word_freq.items():
             f.write('{} {}\n'.format(word,count))
 
@@ -144,7 +163,7 @@ def main():
     pdf_links = get_pdf_links(links)
     download_pdfs(pdf_links)
     word_freq = read_pdfs()
-    write_freqs(word_freq)
+    write_freqs(word_freq,'word_freqs.txt')
     largest = get_top_ten(word_freq)
     print(largest)
 
