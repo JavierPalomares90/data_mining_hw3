@@ -24,7 +24,7 @@ import string
 
 URL = 'http://proceedings.mlr.press/v80/'
 DOWNLOAD_PATH = "./pdfs/"
-FREQUENCY_PATH = "/freqs/"
+FREQUENCY_PATH = "./freqs/"
 
 
 def get_all_links():
@@ -148,7 +148,7 @@ def read_pdfs():
 
 
 def write_freqs(word_freq,filename):
-    with open(filename, 'w') as f:
+    with open(filename, 'w+') as f:
         for word, count in word_freq.items():
             f.write('{} {}\n'.format(word,count))
 
@@ -159,9 +159,9 @@ def get_top_ten(word_freq):
     return largest
 
 def main():
-    links = get_all_links()
-    pdf_links = get_pdf_links(links)
-    download_pdfs(pdf_links)
+    #links = get_all_links()
+    #pdf_links = get_pdf_links(links)
+    #download_pdfs(pdf_links)
     word_freq = read_pdfs()
     write_freqs(word_freq,'word_freqs.txt')
     largest = get_top_ten(word_freq)
