@@ -41,14 +41,14 @@ def get_all_freq_files():
     for file in files:
         file_word_prob = {}
         path = FREQUENCY_PATH + file
-        with open(file,'r') as f:
-            line = file.readline()
+        with open(path,'r') as f:
+            line = f.readline()
             while line:
                 tokens = line.split()
                 word = tokens[0]
                 prob = float(tokens[1])
                 file_word_prob[word] = prob
-                line = file.readline()
+                line = f.readline()
         word_prob_all_files.append(file_word_prob)
     return word_prob_all_files
 
